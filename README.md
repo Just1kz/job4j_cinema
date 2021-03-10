@@ -1,6 +1,6 @@
 # job4j_cinema
 [![Build Status](https://travis-ci.org/Just1kz/job4j_cinema.svg?branch=master)](https://travis-ci.org/Just1kz/job4j_cinema)
-[![codecov](https://codecov.io/gh/Just1kz/job4j_dreamjob/branch/master/graph/badge.svg?token=2V6H80M45D)](https://codecov.io/gh/Just1kz/job4j_dreamjob)
+[![codecov](https://codecov.io/gh/Just1kz/job4j_cinema/branch/master/graph/badge.svg?token=RF7PZ9RNWD)](https://codecov.io/gh/Just1kz/job4j_cinema)
 
 Technologies:
 - Servlets
