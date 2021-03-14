@@ -11,4 +11,5 @@ public interface CinemaService extends AutoCloseable {
 
     List<Place> findAllPlaces();
 
+    public Place findByIdPlace(int id);
 }

@@ -10,8 +10,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import javax.validation.ConstraintViolationException;
 
 public class PsqlService implements CinemaService {
 
@@ -52,10 +54,13 @@ public class PsqlService implements CinemaService {
 
     @Override
     public void buy(Account account, int id) {
+        if (!findByIdPlace(id).getStatus().equals("Free")) {
+            throw new ConstraintViolationException("Place is Occupied", new HashSet<>());
+        } else {
             try (Connection connection = pool.getConnection();
                  PreparedStatement query = connection.prepareStatement(
                          "insert into accounts(username, phone_number) values (?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS)) {
+                         PreparedStatement.RETURN_GENERATED_KEYS)) {
                 query.setString(1, account.getUsername());
                 query.setString(2, account.getPhoneNumber());
                 query.executeUpdate();
@@ -73,6 +78,7 @@ public class PsqlService implements CinemaService {
             } catch (SQLException e) {
                 LOG.error(e.getMessage());
             }
+        }
     }
 
     @Override
@@ -96,6 +102,30 @@ public class PsqlService implements CinemaService {
             LOG.error(e.getMessage());
         }
         return places;
+    }
+
+    @Override
+    public Place findByIdPlace(int id) {
+        Place place = null;
+        try (Connection connection = pool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "select * from halls where idh = ?;", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    place = new Place(
+                            rs.getInt("idh"),
+                            rs.getInt("rowx"),
+                            rs.getInt("columnx"),
+                            rs.getInt("price"),
+                            rs.getString("status"),
+                            new Account(rs.getInt("account_id")));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        return place;
     }
 
 
