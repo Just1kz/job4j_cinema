@@ -54,8 +54,8 @@ public class PsqlService implements CinemaService {
 
     @Override
     public void buy(Account account, int id) {
-        if (!findByIdPlace(id).getStatus().equals("Free")) {
-            throw new ConstraintViolationException("Place is Occupied", new HashSet<>());
+        if (findByIdPlace(id).getStatus().equals("Occupied")) {
+            throw new RuntimeException("Place is Occupied");
         } else {
             try (Connection connection = pool.getConnection();
                  PreparedStatement query = connection.prepareStatement(

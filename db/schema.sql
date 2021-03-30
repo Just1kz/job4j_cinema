@@ -10,7 +10,8 @@ rowX int check ( rowX >= 1 and rowX <= 3 ),
 columnX int check ( columnX >= 1 and columnX <= 3 ),
 price int,
 status text default 'Free',
-account_id int references accounts(idA)
+account_id int references accounts(idA),
+UNIQUE (rowX, columnX)
 );
 
 insert into accounts(username, phone_number) VALUES ('Admin', '0');
