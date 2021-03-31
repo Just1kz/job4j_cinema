@@ -76,7 +76,7 @@ public class PsqlService implements CinemaService {
                     }
                 }
             } catch (SQLException e) {
-                LOG.error(e.getMessage());
+                LOG.error(e.getMessage(), e);
             }
         }
     }
@@ -99,7 +99,7 @@ public class PsqlService implements CinemaService {
                 }
         } catch (Exception e) {
             e.printStackTrace();
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(), e);
         }
         return places;
     }
@@ -123,7 +123,7 @@ public class PsqlService implements CinemaService {
                 }
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(), e);
         }
         return place;
     }
