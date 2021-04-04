@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,7 +10,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <title>Payment!</title>
 </head>
 <body>
 <!-- Optional JavaScript -->
@@ -24,21 +26,49 @@
         crossorigin="anonymous"></script>
 
 <div class="container">
+    <div class="row">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="<%=request.getContextPath()%>/index.html"><h4>Главная</h4></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<%--<div><label></label></div>--%>
+
+<div class="container">
     <div id="aga" class="row pt-3">
         <h3 id="selectedPlace">
         </h3>
     </div>
+
+    <div class="container">
+        <div class="row">
+            <c:if test="${not empty error}">
+                <div style="color:red; font-weight: bold; margin: 30px 0;">
+                        ${error}
+                </div>
+            </c:if>
+        </div>
+    </div>
+
     <div class="row">
-        <form method="post">
+        <form action="<%=request.getContextPath()%>/payment" method="post">
+
+            <div class="form-group" >
+                <input type="hidden" class="form-control" name="id" id="id" placeholder="id">
+            </div>
             <div class="form-group">
                 <label for="username">ФИО</label>
-                <input type="text" class="form-control" id="username" placeholder="ФИО">
+                <input type="text" class="form-control" name="username" id="username" placeholder="ФИО">
             </div>
             <div class="form-group">
                 <label for="phone">Номер телефона</label>
-                <input type="text" class="form-control" id="phone" placeholder="Номер телефона">
+                <input type="text" class="form-control" name="phone" id="phone" placeholder="Номер телефона">
             </div>
-            <button type="button" class="btn btn-success" id="paymentZ">Оплатить</button>
+            <button type="submit" class="btn btn-success" onclick="validate()">Оплатить</button>
+<%--            id="paymentZ"--%>
         </form>
     </div>
 </div>
@@ -50,13 +80,14 @@
         let selectedPlace = getPlaceId();
         console.log(selectedPlace.valueOf());
         load(selectedPlace);
-        $('#paymentZ').click(function () {
-            if (validate()) {
-                payment();
-                window.location.href = "/cinema/index.html";
-            }
-        })
-    });
+        $('#id').val(selectedPlace.valueOf());
+
+        // $('#paymentZ').click(function () {
+        //     if (validate()) {
+        //         payment();
+                // window.location.href = "/cinema/index.html";
+
+        });
 
     function getPlaceId() {
         return new URLSearchParams(window.location.search).get("place");

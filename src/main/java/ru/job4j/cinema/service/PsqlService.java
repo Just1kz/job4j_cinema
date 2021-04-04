@@ -54,31 +54,28 @@ public class PsqlService implements CinemaService {
 
     @Override
     public void buy(Account account, int id) {
-        if (findByIdPlace(id).getStatus().equals("Occupied")) {
-            throw new RuntimeException("Place is Occupied");
-        } else {
-            try (Connection connection = pool.getConnection();
-                 PreparedStatement query = connection.prepareStatement(
-                         "insert into accounts(username, phone_number) values (?, ?)",
-                         PreparedStatement.RETURN_GENERATED_KEYS)) {
-                query.setString(1, account.getUsername());
-                query.setString(2, account.getPhoneNumber());
-                query.executeUpdate();
-                ResultSet keys = query.getGeneratedKeys();
-                if (keys.next()) {
-                    try (PreparedStatement updatePlace = connection.prepareStatement(
+//            try (Connection connection = pool.getConnection();
+//                 PreparedStatement query = connection.prepareStatement(
+//                         "insert into accounts(username, phone_number) values (?, ?)",
+//                         PreparedStatement.RETURN_GENERATED_KEYS)) {
+//                query.setString(1, account.getUsername());
+//                query.setString(2, account.getPhoneNumber());
+//                query.executeUpdate();
+//                ResultSet keys = query.getGeneratedKeys();
+//                if (keys.next()) {
+                    try (Connection connection = pool.getConnection();
+                            PreparedStatement updatePlace = connection.prepareStatement(
                             "update halls set account_id = ?, status = ? where idh = ?"
                     )) {
-                        updatePlace.setInt(1, keys.getInt(1));
+                        updatePlace.setInt(1, account.getIdA());
                         updatePlace.setString(2, "Occupied");
                         updatePlace.setInt(3, id);
                         updatePlace.executeUpdate();
                     }
-                }
-            } catch (SQLException e) {
+//                }
+            catch (SQLException e) {
                 LOG.error(e.getMessage(), e);
             }
-        }
     }
 
     @Override
@@ -128,6 +125,52 @@ public class PsqlService implements CinemaService {
         return place;
     }
 
+    @Override
+    public void addOrders(Place place) throws Exception {
+        Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("INSERT INTO orders(rowx, columnx, account_id) "
+                     + "VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, place.getRowX());
+            ps.setInt(2, place.getColumnX());
+            ps.setInt(3, place.getAccountId().getIdA());
+            ps.execute();
+    }
+
+    @Override
+    public void addAccount(Account account) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement query = cn.prepareStatement(
+                     "insert into accounts(username, phone_number) values (?, ?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
+            query.setString(1, account.getUsername());
+            query.setString(2, account.getPhoneNumber());
+            query.execute();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Account findByNumber(String number) throws SQLException {
+        Account account = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement query = cn.prepareStatement(
+                     "Select * from accounts where phone_number = ?",
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
+            query.setString(1, number);
+            try (ResultSet rs = query.executeQuery()) {
+                if (rs.next()) {
+                    account = new Account(
+                            rs.getInt("ida"),
+                            rs.getString("username"),
+                            rs.getString("phone_number"));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return account;
+    }
 
     @Override
     public void close() throws Exception {

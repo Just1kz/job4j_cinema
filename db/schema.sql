@@ -1,7 +1,7 @@
 create table if not exists accounts(
 idA serial primary key,
 username text,
-phone_number text
+phone_number text unique
 );
 
 create table if not exists halls(
@@ -12,6 +12,14 @@ price int,
 status text default 'Free',
 account_id int references accounts(idA),
 UNIQUE (rowX, columnX)
+);
+
+create table if not exists orders(
+    id serial primary key,
+    rowX int not null,
+    columnX int not null,
+    account_id int references accounts(idA),
+    UNIQUE (rowX, columnX)
 );
 
 insert into accounts(username, phone_number) VALUES ('Admin', '0');
